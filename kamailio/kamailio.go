@@ -1,3 +1,4 @@
+//go:generate ../../../tools/readme_config_includer/generator
 package kamailio
 
 import (
@@ -7,6 +8,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	_ "embed"
 )
 
 type Kamailio struct {
@@ -15,21 +17,15 @@ type Kamailio struct {
 	Nodeid  string `toml:"nodeid"`
 }
 
-var KamConfig = `
-  # Kamailio socket
-  socket = "unix:/tmp/kamailio_ctl"
-  #Supported modules tm.stats core.shmmem core.tcp_info sl.stats tls.info
-  modules = "tm.stats core.shmmem core.tcp_info sl.stats tls.info"
-  # nodeid only used for tags
-  nodeid = ""
-`
+//go:embed sample.conf
+var sampleConfig string
 
 func (k *Kamailio) Description() string {
 	return "Kamailio telegraf input plugin"
 }
 
 func (k *Kamailio) SampleConfig() string {
-	return KamConfig
+	return sampleConfig
 }
 func recordGet(conn net.Conn, method string) ([]binrpc.Record, error) {
 	// WritePacket returns the cookie generated
